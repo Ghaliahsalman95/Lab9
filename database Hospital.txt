@@ -1,0 +1,71 @@
+create database Hospital;
+
+########################### [ 1 table ] #################################
+
+
+create table Doctor(
+    ID varchar(10) primary key ,
+    specialization varchar(10) not null ,
+    phone varchar(10) not null unique ,
+    age int not null ,
+    salary int not null check ( salary>=10000 ),
+    yearsofexperience int not null);
+alter table doctor add column name varchar(30) not null ;
+########################### [ 2 table ] #################################
+
+create table Patient(
+    ID varchar(10) primary key ,
+    name varchar(20) not null ,
+    phone varchar(10)not null ,## not unique because if there is child does not have  phone number put parent number,
+    # and one of his parents # is patient in the hospital, so repeating the phone is allowed
+    gender char check ( gender='f' or gender='m' ),
+    DoctorID varchar(10), foreign key (DoctorID) references Doctor(ID));
+########################### [ 3 table ] #################################
+
+###############
+create table Appointments(
+    date_Time datetime not null ,
+    appartmentDoctor varchar(10) not null ,
+    Doctor_ID varchar(10),
+    foreign key(Doctor_ID) references Doctor(ID),
+    Patient_ID varchar(10),
+    foreign key(Patient_ID)references Patient(ID));
+
+
+
+########################### [ 4 table ] #################################
+create table filePatient(
+    ID varchar(10) primary key ,
+    age int not null ,
+    prescription   varchar(100) not null ,
+    bloodtype  varchar(3) check ( bloodtype IN ('A+','A-','B+',' B-','O+',' O-', 'AB+', 'AB-'))
+    ,patientID varchar(10), foreign key (patientID) references Patient(ID));
+
+
+#################################################################
+    insert into doctor values ('1234567890','derma','0500040000',40,10500,27,'Doct1');
+    insert into doctor values ('1222567890','dentist','0500440000',40,15000,20,'Doct2');
+    insert into doctor values ('1234000890','orthopeist','0500444444',40,13000,17,'Doct3');
+    select * from doctor;
+    update doctor set name ='doct1' where ID='1234567890';
+    update doctor set name ='doct2' where ID='1222567890';
+    update doctor set name ='doct3' where ID='1234000890';
+    #####################################################################
+
+
+    insert into patient values ('0987654321','patient1','05567890','f','1234000890');
+    insert into patient values ('6789054321','patient2','05509890','f','1222567890');
+    insert into patient values ('8907654321','patient3','05000090','f','1234000890');
+    select * from patient;
+########################################################################
+
+insert into appointments values ('2024-10-01','orthopeist','1234000890','8907654321');
+insert into appointments values ('2024-10-01','derma','1222567890','6789054321');
+insert into appointments values ('2024-10-01','dentist','1234000890','0987654321');
+delete from appointments where Patient_ID='8907654321';
+#############################################################
+
+insert into filePatient values ('4321432143',20,'prescriptionPatient1','A+','0987654321');
+insert into filePatient values ('4321000043',60,'prescriptionPatient2','B+','6789054321');
+insert into filePatient values ('4321032143',29,'prescriptionPatient3','AB+','8907654321');
+delete from filePatient where patientID='''8907654321';
